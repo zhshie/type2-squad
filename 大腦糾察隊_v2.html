@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta property="og:title" content="大腦糾察隊：暴走分公司｜職場人格測驗">
+<meta property="og:description" content="你是暴走安管主管？精準協調大師？職場人格測驗 × 第二型發炎衛教">
+<meta property="og:image" content="cover.png">
+<meta property="og:type" content="website">
 <title>大腦糾察隊：暴走分公司｜職場人格測驗</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -328,6 +332,10 @@ body{padding-top:44px}
 
 /* ══ SECTION TITLE SHARED ══ */
 .section-title{font-size:.75rem;color:var(--accent);letter-spacing:.12em;font-weight:700;margin-bottom:8px}
+
+/* ══ COVER & CHAR IMAGES ══ */
+.intro-cover{width:100%;max-width:460px;margin:4px auto 20px;display:block;border-radius:16px;box-shadow:0 8px 32px rgba(123,45,139,.15)}
+.char-img{width:180px;height:180px;object-fit:contain;display:block;margin:0 auto 10px;filter:drop-shadow(0 4px 16px rgba(123,45,139,.2))}
 </style>
 </head>
 <body>
@@ -351,6 +359,7 @@ body{padding-top:44px}
   <div class="intro-badge">🏢 人體總公司 · 危機管理系統</div>
   <h1 class="intro-title">大腦糾察隊</h1>
   <p class="intro-sub">暴走分公司｜職場人格測驗 × 第二型發炎衛教</p>
+  <img src="cover.png" class="intro-cover" alt="大腦糾察隊封面" onerror="this.style.display='none'">
   <div class="intro-box">
     <div class="ntag">▶ 特助 小哨（ILC2）</div>
     <div class="ntext">
@@ -1015,7 +1024,7 @@ function showPersonality(){
   const p=PERSONAS[winner];
   document.getElementById('personality-content').innerHTML=`
     <div class="cell-wrap">
-      <div class="cell-icon cell-${winner}">${p.emoji}</div>
+      <img src="char_${winner}.png" class="char-img" alt="${p.name}" onerror="this.style.display='none'">
       <p class="p-disc-label">${p.discLabel}</p>
       <h2 class="p-name" style="color:${p.colorVar}">${p.name}</h2>
       <p class="p-cell-sub">人體總公司的 ${p.cell}</p>
@@ -1098,42 +1107,46 @@ function renderShareCanvas(){
   const W=540,H=960;
   canvas.width=W;canvas.height=H;
   const p=PERSONAS[G.pType];
-  const grad=ctx.createLinearGradient(0,0,0,H);
-  grad.addColorStop(0,'#7B2D8B');grad.addColorStop(1,'#4a1060');
-  ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
-  // Decorative circles
-  ctx.beginPath();ctx.arc(W*.8,H*.15,180,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,.04)';ctx.fill();
-  ctx.beginPath();ctx.arc(W*.1,H*.85,130,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,.04)';ctx.fill();
-  // sanofi logo text
-  ctx.fillStyle='rgba(255,255,255,.9)';ctx.font='italic 700 36px serif';ctx.textAlign='center';
-  ctx.fillText('sanofi',W/2,72);
-  ctx.strokeStyle='rgba(255,255,255,.25)';ctx.lineWidth=1;
-  ctx.beginPath();ctx.moveTo(W/2-80,92);ctx.lineTo(W/2+80,92);ctx.stroke();
-  // Game title
-  ctx.fillStyle='rgba(255,255,255,.55)';ctx.font='400 22px sans-serif';
-  ctx.fillText('大腦糾察隊：暴走分公司',W/2,132);
-  // Emoji
-  ctx.font='110px serif';ctx.fillText(p.emoji,W/2,300);
-  // Name
-  ctx.fillStyle='#fff';ctx.font='700 50px sans-serif';ctx.fillText(p.name,W/2,385);
-  // Cell
-  ctx.fillStyle='rgba(255,255,255,.7)';ctx.font='400 26px sans-serif';
-  ctx.fillText(`人體總公司的 ${p.cell}`,W/2,438);
-  ctx.font='300 22px sans-serif';
-  ctx.fillText(`（${p.discLabel.split('：')[0]}）`,W/2,476);
-  // Divider
-  ctx.strokeStyle='rgba(255,255,255,.25)';
-  ctx.beginPath();ctx.moveTo(W/2-100,510);ctx.lineTo(W/2+100,510);ctx.stroke();
-  // HP
-  ctx.fillStyle='#fff';ctx.font='500 28px sans-serif';
-  ctx.fillText(`公司最終健康度 ${G.hp} / 100`,W/2,556);
-  // HP bar
-  const bx=W/2-140,by=576,bw=280,bh=12;
-  ctx.fillStyle='rgba(255,255,255,.2)';roundRect(ctx,bx,by,bw,bh,6);ctx.fill();
-  ctx.fillStyle='rgba(255,255,255,.85)';roundRect(ctx,bx,by,bw*(G.hp/100),bh,6);ctx.fill();
-  // Hashtags
-  ctx.fillStyle='rgba(255,255,255,.45)';ctx.font='300 20px sans-serif';
-  ctx.fillText('#大腦糾察隊  #暴走分公司  #第二型發炎',W/2,890);
+
+  function doRender(charImg){
+    const grad=ctx.createLinearGradient(0,0,0,H);
+    grad.addColorStop(0,'#7B2D8B');grad.addColorStop(1,'#4a1060');
+    ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+    ctx.beginPath();ctx.arc(W*.8,H*.15,180,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,.04)';ctx.fill();
+    ctx.beginPath();ctx.arc(W*.1,H*.85,130,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,.04)';ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,.9)';ctx.font='italic 700 36px serif';ctx.textAlign='center';
+    ctx.fillText('sanofi',W/2,72);
+    ctx.strokeStyle='rgba(255,255,255,.25)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(W/2-80,92);ctx.lineTo(W/2+80,92);ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.55)';ctx.font='400 22px sans-serif';
+    ctx.fillText('大腦糾察隊：暴走分公司',W/2,132);
+    if(charImg){
+      const iw=260,ih=260;
+      ctx.drawImage(charImg,(W-iw)/2,148,iw,ih);
+    } else {
+      ctx.font='110px serif';ctx.fillText(p.emoji,W/2,300);
+    }
+    ctx.fillStyle='#fff';ctx.font='700 46px sans-serif';ctx.fillText(p.name,W/2,444);
+    ctx.fillStyle='rgba(255,255,255,.7)';ctx.font='400 24px sans-serif';
+    ctx.fillText(`人體總公司的 ${p.cell}`,W/2,486);
+    ctx.font='300 20px sans-serif';
+    ctx.fillText(`（${p.discLabel.split('：')[0]}）`,W/2,520);
+    ctx.strokeStyle='rgba(255,255,255,.25)';
+    ctx.beginPath();ctx.moveTo(W/2-100,550);ctx.lineTo(W/2+100,550);ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='500 26px sans-serif';
+    ctx.fillText(`公司最終健康度 ${G.hp} / 100`,W/2,590);
+    const bx=W/2-140,by=612,bw=280,bh=12;
+    ctx.fillStyle='rgba(255,255,255,.2)';roundRect(ctx,bx,by,bw,bh,6);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,.85)';roundRect(ctx,bx,by,bw*(G.hp/100),bh,6);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,.45)';ctx.font='300 20px sans-serif';
+    ctx.fillText('#大腦糾察隊  #暴走分公司  #第二型發炎',W/2,900);
+  }
+
+  const img=new Image();
+  img.onload=()=>doRender(img);
+  img.onerror=()=>doRender(null);
+  img.src=`char_${G.pType}.png`;
+  if(img.complete&&img.naturalWidth>0){img.onload=null;doRender(img);}
 }
 function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);
   ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
@@ -1143,8 +1156,20 @@ function downloadCard(){
   const canvas=document.getElementById('share-canvas');
   const a=document.createElement('a');a.download='大腦糾察隊結果.png';a.href=canvas.toDataURL('image/png');a.click();
 }
-function shareIG(){downloadCard();}
-function shareFB(){G.shareCount++;logShare('FB');window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),'_blank');}
+function shareIG(){G.shareCount++;logShare('IG');_shareCanvasImage('IG');}
+function shareFB(){G.shareCount++;logShare('FB');_shareCanvasImage('FB');}
+function _shareCanvasImage(platform){
+  const canvas=document.getElementById('share-canvas');
+  canvas.toBlob(blob=>{
+    const file=new File([blob],'大腦糾察隊結果.png',{type:'image/png'});
+    if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+      navigator.share({files:[file],title:'大腦糾察隊：暴走分公司',text:`我的職場人格：${PERSONAS[G.pType]?.name}！#大腦糾察隊 #第二型發炎`}).catch(()=>downloadCard());
+    } else {
+      downloadCard();
+      if(platform==='FB') setTimeout(()=>window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),'_blank'),800);
+    }
+  });
+}
 function shareLINE(){G.shareCount++;logShare('LINE');window.open('https://social-plugins.line.me/lineit/share?url='+encodeURIComponent(location.href),'_blank');}
 function copyLink(){
   G.shareCount++;logShare('Link');
