@@ -31,7 +31,7 @@ body{font-family:'Noto Sans TC',system-ui,sans-serif;background:var(--bg);color:
 /* Hide topbar on fullscreen intro */
 body:has(#screen-intro.active) #sanofi-topbar{display:none}
 #sanofi-topbar .tb-title{color:#005587;font-size:.68rem;letter-spacing:.08em;
-  text-align:right;line-height:1.4;font-weight:600}
+  text-align:right;line-height:1.4;font-weight:600;padding-right:44px}
 body{padding-top:56px}
 
 /* ══ BACK / ROW BUTTONS ══ */
@@ -43,10 +43,10 @@ body{padding-top:56px}
 .btn-main{flex:1}
 
 /* ══ MUTE BTN ══ */
-#mute-btn{position:fixed;top:12px;right:14px;z-index:999;width:32px;height:32px;border-radius:50%;
-  background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.35);
-  cursor:pointer;font-size:.85rem;box-shadow:none;transition:opacity .2s;line-height:1}
-#mute-btn:hover{background:rgba(255,255,255,.3)}
+#mute-btn{position:fixed;top:16px;right:14px;z-index:999;width:32px;height:32px;border-radius:50%;
+  background:rgba(0,85,135,.08);color:var(--accent);border:1px solid var(--accent);
+  cursor:pointer;font-size:.85rem;box-shadow:none;transition:background .2s;line-height:1}
+#mute-btn:hover{background:rgba(0,85,135,.16)}
 
 /* ══ SCREENS ══ */
 .screen{display:none;width:100%;max-width:680px;margin:0 auto;padding:20px;animation:fadeIn .45s ease}
@@ -56,12 +56,14 @@ body{padding-top:56px}
 @keyframes fadeIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 
 /* ══ INTRO (fullscreen cover) ══ */
-#screen-intro{position:fixed;top:0;left:0;width:100%;height:100%;padding:0;overflow:hidden;
-  background:#000;z-index:950}
-#screen-intro.active{display:block}
-.cover-full{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0}
-.btn-cover-start{position:absolute;bottom:15%;left:50%;transform:translateX(-50%);
-  background:transparent;border:none;color:transparent;width:52%;height:64px;
+#screen-intro{position:fixed;inset:0;padding:0;overflow:hidden;
+  background:#0a1a2a;z-index:950;display:none;align-items:center;justify-content:center}
+#screen-intro.active{display:flex}
+.cover-stage{position:relative;aspect-ratio:941/1672;
+  height:min(100vh, calc(100vw * 1672 / 941));width:auto;max-width:100%;margin:auto}
+.cover-full{width:100%;height:100%;object-fit:cover;display:block}
+.btn-cover-start{position:absolute;bottom:9%;left:50%;transform:translateX(-50%);
+  background:transparent;border:none;color:transparent;width:48%;height:7%;
   cursor:pointer;z-index:10;border-radius:30px}
 /* ══ INTRO DIALOGUE (new screen) ══ */
 #screen-intro-dialogue{min-height:100vh;display:none;flex-direction:column;align-items:center;
@@ -500,9 +502,11 @@ body{padding-top:56px}
 
 <!-- ══ INTRO (fullscreen cover) ══ -->
 <div id="screen-intro" class="screen active">
-  <img src="plot/cover.png" class="cover-full" alt="封面"
-    onerror="this.style.background:'#1a2a34'">
-  <button class="btn-cover-start" onclick="showScreen('screen-intro-dialogue')" aria-label="開始任務"></button>
+  <div class="cover-stage">
+    <img src="plot/cover.png" class="cover-full" alt="封面"
+      onerror="this.style.background='#1a2a34'">
+    <button class="btn-cover-start" onclick="showScreen('screen-intro-dialogue')" aria-label="開始任務"></button>
+  </div>
 </div>
 
 <!-- ══ INTRO DIALOGUE ══ -->
@@ -594,8 +598,8 @@ body{padding-top:56px}
 </div>
 
 <!-- ══ EDU ══ -->
-<div id="screen-edu" class="screen" style="padding:0">
-  <img src="plot/edu.png" style="width:100%;display:block" alt="第二型發炎衛教"
+<div id="screen-edu" class="screen" style="padding:24px 0 0">
+  <img src="plot/edu.png" style="width:100%;display:block;border-radius:12px" alt="第二型發炎衛教"
     onerror="this.style.display='none'">
   <div style="padding:16px 20px 40px">
     <div class="btn-row">
@@ -1812,7 +1816,10 @@ function submitToSheets(){
   arr.push({...data,time:new Date().toISOString()});
   localStorage.setItem('sanofi_responses',JSON.stringify(arr));
   if(APPS_SCRIPT_URL&&!APPS_SCRIPT_URL.includes('YOUR_')){
-    fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify(data),headers:{'Content-Type':'application/json'}}).catch(console.error);
+    // mode:'no-cors' + text/plain 避免 CORS 預檢（Apps Script 不回應 OPTIONS）
+    fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify(data)}).catch(console.error);
   }
 }
 
