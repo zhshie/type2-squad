@@ -1839,6 +1839,28 @@ function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x
   ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
   ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);}
 
+function _isLineInApp(){
+  return /Line\//i.test(navigator.userAgent);
+}
+function _showLongPressOverlay(){
+  let ov=document.getElementById('lp-overlay');
+  if(!ov){
+    ov=document.createElement('div');ov.id='lp-overlay';
+    ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:2000;'+
+      'display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;touch-action:none';
+    ov.innerHTML=
+      '<p style="color:#fff;font-size:.95rem;margin-bottom:4px;font-weight:600;text-align:center">📥 長按圖片即可儲存至相簿</p>'+
+      '<p style="color:rgba(255,255,255,.6);font-size:.78rem;margin-bottom:16px;text-align:center">LINE 瀏覽器不支援直接下載，請長按圖片另存</p>'+
+      '<img id="lp-img" style="max-width:100%;max-height:65vh;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.5)" alt="分享卡">'+
+      '<button onclick="document.getElementById(\'lp-overlay\').style.display=\'none\'" '+
+        'style="margin-top:20px;background:#fff;border:none;border-radius:24px;'+
+        'padding:11px 32px;font-size:.9rem;font-family:inherit;font-weight:600;cursor:pointer">關閉</button>';
+    document.body.appendChild(ov);
+  }
+  const canvas=document.getElementById('share-canvas');
+  document.getElementById('lp-img').src=canvas.toDataURL('image/png');
+  ov.style.display='flex';
+}
 function _getCanvasBlob(){
   return new Promise(resolve=>{
     document.getElementById('share-canvas').toBlob(blob=>resolve(blob),'image/png');
@@ -1846,6 +1868,8 @@ function _getCanvasBlob(){
 }
 async function _shareOrDownload(logKey){
   if(logKey){G.shareCount++;logShare(logKey);}
+  // LINE 內建瀏覽器：封鎖下載 → 改為長按圖片儲存
+  if(_isLineInApp()){_showLongPressOverlay();return;}
   const blob=await _getCanvasBlob();
   if(!blob){alert('圖片尚未產生，請稍後再試');return;}
   const file=new File([blob],'大腦糾察隊結果.png',{type:'image/png'});
