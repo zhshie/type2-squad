@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Brain Patrol: The Runaway Branch ｜ Workplace Personality Quiz</title>
+<meta property="og:type" content="website">
+<meta property="og:title" content="Brain Patrol: The Runaway Branch ｜ Workplace Personality Quiz">
+<meta property="og:description" content="A crisis-management mission inside the Human Body Corporation! Find out which immune-cell personality you are.">
+<meta property="og:image" content="https://zhshie.github.io/type2-squad/plot/cover_eng.png">
+<meta property="og:url" content="https://zhshie.github.io/type2-squad/en.html">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -1892,9 +1898,22 @@ async function _shareOrDownload(logKey){
   setTimeout(()=>URL.revokeObjectURL(url),3000);
 }
 function downloadCard(){_shareOrDownload(null);}
+function _canShareImage(){
+  try{return !!(navigator.canShare&&navigator.canShare({files:[new File([new Blob()],'a.png',{type:'image/png'})]}));}
+  catch(e){return false;}
+}
 function shareIG(){_shareOrDownload('IG');}
-function shareFB(){_shareOrDownload('FB');}
-function shareLINE(){_shareOrDownload('LINE');}
+function shareFB(){
+  // Mobile with file-share support -> native share sheet (shares the card image); desktop -> open FB link-share window
+  if(_canShareImage()){_shareOrDownload('FB');return;}
+  G.shareCount++;logShare('FB');
+  window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),'_blank','noopener,noreferrer');
+}
+function shareLINE(){
+  if(_isLineInApp()||_canShareImage()){_shareOrDownload('LINE');return;}
+  G.shareCount++;logShare('LINE');
+  window.open('https://social-plugins.line.me/lineit/share?url='+encodeURIComponent(location.href),'_blank','noopener,noreferrer');
+}
 function copyLink(){
   G.shareCount++;logShare('Link');
   if(navigator.clipboard){navigator.clipboard.writeText(location.href).then(()=>alert('Link copied!'));}
