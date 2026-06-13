@@ -1817,21 +1817,28 @@ function renderShareCanvas(){
     ctx.fillText('#大腦糾察隊  #暴走分公司  #第二型發炎',W/2,920);
   };
 
-  const imgSize=320,imgX=(W-imgSize)/2,imgY=160;
+  // 角色圖區域：寬 360、高 430，垂直起點 140
+  const boxW=360,boxH=430,boxX=(W-boxW)/2,boxY=140;
+  // contain 等比縮放，不變形
+  const _drawContain=(ctx,img)=>{
+    const nw=img.naturalWidth||img.width,nh=img.naturalHeight||img.height;
+    if(!nw||!nh){ctx.drawImage(img,boxX,boxY,boxW,boxH);return;}
+    const r=Math.min(boxW/nw,boxH/nh);
+    const dw=nw*r,dh=nh*r;
+    ctx.drawImage(img,boxX+(boxW-dw)/2,boxY+(boxH-dh)/2,dw,dh);
+  };
   if(p.charImg){
-    // Try reusing the already-loaded HTML image (faster, avoids CORS)
     const existImg=document.getElementById('share-char-img');
     if(existImg&&existImg.naturalWidth>0){
-      ctx.drawImage(existImg,imgX,imgY,imgSize,imgSize);
-      drawText();
+      _drawContain(ctx,existImg);drawText();
     } else {
       const img=new Image();
-      img.onload=()=>{ctx.drawImage(img,imgX,imgY,imgSize,imgSize);drawText();};
-      img.onerror=()=>{ctx.font='100px serif';ctx.textAlign='center';ctx.fillText(p.emoji,W/2,360+imgSize/2);drawText();};
+      img.onload=()=>{_drawContain(ctx,img);drawText();};
+      img.onerror=()=>{ctx.font='100px serif';ctx.textAlign='center';ctx.fillText(p.emoji,W/2,boxY+boxH/2);drawText();};
       img.src=p.charImg;
     }
   } else {
-    ctx.font='100px serif';ctx.textAlign='center';ctx.fillText(p.emoji,W/2,360+imgSize/2);
+    ctx.font='100px serif';ctx.textAlign='center';ctx.fillText(p.emoji,W/2,boxY+boxH/2);
     drawText();
   }
 }
