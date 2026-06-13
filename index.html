@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>大腦糾察隊：暴走分公司｜職場人格測驗</title>
+<meta property="og:type" content="website">
+<meta property="og:title" content="大腦糾察隊：暴走分公司｜職場人格測驗">
+<meta property="og:description" content="一場人體總公司的危機管理大作戰！測出你的免疫細胞人格，看看你是哪一型。">
+<meta property="og:image" content="https://zhshie.github.io/type2-squad/plot/cover.png">
+<meta property="og:url" content="https://zhshie.github.io/type2-squad/">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -1892,9 +1898,22 @@ async function _shareOrDownload(logKey){
   setTimeout(()=>URL.revokeObjectURL(url),3000);
 }
 function downloadCard(){_shareOrDownload(null);}
+function _canShareImage(){
+  try{return !!(navigator.canShare&&navigator.canShare({files:[new File([new Blob()],'a.png',{type:'image/png'})]}));}
+  catch(e){return false;}
+}
 function shareIG(){_shareOrDownload('IG');}
-function shareFB(){_shareOrDownload('FB');}
-function shareLINE(){_shareOrDownload('LINE');}
+function shareFB(){
+  // 行動裝置可分享圖片 → 用原生分享面板分享人格卡；桌機 → 開啟 FB 連結分享視窗
+  if(_canShareImage()){_shareOrDownload('FB');return;}
+  G.shareCount++;logShare('FB');
+  window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),'_blank','noopener,noreferrer');
+}
+function shareLINE(){
+  if(_isLineInApp()||_canShareImage()){_shareOrDownload('LINE');return;}
+  G.shareCount++;logShare('LINE');
+  window.open('https://social-plugins.line.me/lineit/share?url='+encodeURIComponent(location.href),'_blank','noopener,noreferrer');
+}
 function copyLink(){
   G.shareCount++;logShare('Link');
   if(navigator.clipboard){navigator.clipboard.writeText(location.href).then(()=>alert('連結已複製！'));}
